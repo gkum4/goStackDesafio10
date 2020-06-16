@@ -27,7 +27,8 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     async function loadFoods(): Promise<void> {
-      // TODO LOAD FOODS
+      const newFoods = await api.get('/foods');
+      setFoods(newFoods.data);
     }
 
     loadFoods();
@@ -37,20 +38,34 @@ const Dashboard: React.FC = () => {
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
     try {
-      // TODO ADD A NEW FOOD PLATE TO THE API
+      const newFood = await api.post('/foods', { ...food, available: true });
+      setFoods([...foods, newFood.data]);
     } catch (err) {
       console.log(err);
     }
   }
 
-  async function handleUpdateFood(
-    food: Omit<IFoodPlate, 'id' | 'available'>,
-  ): Promise<void> {
+  async function handleUpdateFood(food: IFoodPlate): Promise<void> {
+    const updateFood = { ...food };
+    console.log(updateFood);
+    await api.put(`/foods/${updateFood.id}`, updateFood);
+    const foodsArr = [...foods];
+    const index = foodsArr.findIndex(item => {
+      return item.id === updateFood.id;
+    });
+    foodsArr[index] = updateFood;
+    setFoods(foodsArr);
     // TODO UPDATE A FOOD PLATE ON THE API
   }
 
   async function handleDeleteFood(id: number): Promise<void> {
-    // TODO DELETE A FOOD PLATE FROM THE API
+    await api.delete(`/foods/${id}`);
+    const foodsArr = [...foods];
+    const index = foodsArr.findIndex(item => {
+      return item.id === id;
+    });
+    foodsArr.splice(index, 1);
+    setFoods(foodsArr);
   }
 
   function toggleModal(): void {
@@ -62,7 +77,8 @@ const Dashboard: React.FC = () => {
   }
 
   function handleEditFood(food: IFoodPlate): void {
-    // TODO SET THE CURRENT EDITING FOOD ID IN THE STATE
+    setEditingFood(food);
+    toggleEditModal();
   }
 
   return (
@@ -88,6 +104,8 @@ const Dashboard: React.FC = () => {
               food={food}
               handleDelete={handleDeleteFood}
               handleEditFood={handleEditFood}
+              handleUpdateFood={handleUpdateFood}
+              setEditingFood={setEditingFood}
             />
           ))}
       </FoodsContainer>

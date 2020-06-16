@@ -17,21 +17,34 @@ interface IProps {
   food: IFoodPlate;
   handleDelete: (id: number) => {};
   handleEditFood: (food: IFoodPlate) => void;
+  handleUpdateFood: (food: IFoodPlate) => Promise<void>;
+  setEditingFood: (food: IFoodPlate) => void;
 }
 
 const Food: React.FC<IProps> = ({
   food,
   handleDelete,
   handleEditFood,
+  handleUpdateFood,
+  setEditingFood,
 }: IProps) => {
   const [isAvailable, setIsAvailable] = useState(food.available);
 
   async function toggleAvailable(): Promise<void> {
+    if (isAvailable === true) {
+      setIsAvailable(false);
+    } else {
+      setIsAvailable(true);
+    }
+    await handleUpdateFood({
+      description: food.description,
+      image: food.image,
+      name: food.name,
+      price: food.price,
+      available: !isAvailable,
+      id: food.id,
+    });
     // TODO UPDATE STATUS (available)
-  }
-
-  function setEditingFood(): void {
-    // TODO - SET THE ID OF THE CURRENT ITEM TO THE EDITING FOOD AND OPEN MODAL
   }
 
   return (
@@ -51,7 +64,7 @@ const Food: React.FC<IProps> = ({
           <button
             type="button"
             className="icon"
-            onClick={() => setEditingFood()}
+            onClick={() => handleEditFood(food)}
             data-testid={`edit-food-${food.id}`}
           >
             <FiEdit3 size={20} />

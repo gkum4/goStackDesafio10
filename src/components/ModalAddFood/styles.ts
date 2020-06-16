@@ -13,6 +13,18 @@ export const Form = styled(Unform)`
     margin-bottom: 40px;
   }
 
+  .inputTitle {
+    color: #6c6c80;
+    margin-bottom: 10px;
+    margin-top: 15px;
+  }
+
+  .rowContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
   button {
     margin-top: 48px;
     align-self: flex-end;

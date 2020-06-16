@@ -18,7 +18,7 @@ interface IFoodPlate {
 interface IModalProps {
   isOpen: boolean;
   setIsOpen: () => void;
-  handleUpdateFood: (food: Omit<IFoodPlate, 'id' | 'available'>) => void;
+  handleUpdateFood: (food: IFoodPlate) => Promise<void>;
   editingFood: IFoodPlate;
 }
 
@@ -39,20 +39,51 @@ const ModalEditFood: React.FC<IModalProps> = ({
 
   const handleSubmit = useCallback(
     async (data: IEditFoodData) => {
-      // EDIT A FOOD PLATE AND CLOSE THE MODAL
+      if (!data.image.startsWith('http')) {
+        alert('Link inválido');
+        return;
+      }
+
+      if (
+        data.image.startsWith('http') &&
+        data.description !== '' &&
+        data.name !== '' &&
+        data.price !== ''
+      ) {
+        await handleUpdateFood({
+          ...data,
+          id: editingFood.id,
+          available: editingFood.available,
+        });
+        setIsOpen();
+        return;
+      }
+
+      alert('Campos não preenchidos');
     },
-    [handleUpdateFood, setIsOpen],
+    [handleUpdateFood, setIsOpen, editingFood.id, editingFood.available],
   );
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
       <Form ref={formRef} onSubmit={handleSubmit} initialData={editingFood}>
         <h1>Editar Prato</h1>
+
+        <p className="inputTitle">URL da imagem</p>
         <Input name="image" placeholder="Cole o link aqui" />
 
-        <Input name="name" placeholder="Ex: Moda Italiana" />
-        <Input name="price" placeholder="Ex: 19.90" />
+        <div className="rowContainer">
+          <div style={{ flex: 3 }}>
+            <p className="inputTitle">Nome do prato</p>
+            <Input name="name" placeholder="Ex: Moda Italiana" />
+          </div>
+          <div style={{ flex: 1, marginLeft: 15 }}>
+            <p className="inputTitle">Preço</p>
+            <Input name="price" placeholder="Ex: 19.90" />
+          </div>
+        </div>
 
+        <p className="inputTitle">Descrição do prato</p>
         <Input name="description" placeholder="Descrição" />
 
         <button type="submit" data-testid="edit-food-button">

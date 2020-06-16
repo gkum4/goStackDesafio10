@@ -15,9 +15,9 @@ export const Container = styled.div<IContainerProps>`
   width: 100%;
   font-size: 16px;
 
-  & + div {
+  /* & + div {
     margin-top: 24px;
-  }
+  } */
 
   h1 {
     margin-bottom: 40px;
